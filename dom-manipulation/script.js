@@ -16,17 +16,32 @@ function saveQuotes() {
     localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
+   // Create and populate categories dropdown
+   function createCategoryFilter() {
+    // Create category filter dropdown if it doesn't exist
+    let categoryFilter = document.getElementById("categoryFilter");
+    if (!categoryFilter) {
+        categoryFilter = document.createElement("select");
+        categoryFilter.id = "categoryFilter";
+        categoryFilter.addEventListener("change", (e) => filterQuotes(e.target.value));
+        document.body.appendChild(categoryFilter);
+    }
+    populateCategories(); // Populate categories after dropdown is created
+}
+
 
 function populateCategories() {
     const categories = [...new Set(quotes.map(q => q.category))];
     const dropdown = document.getElementById("categoryDropdown");
     dropdown.innerHTML = "<option value='all'>All</option>"; // Default option
+    
     categories.forEach(category => {
         const option = document.createElement("option");
         option.value = category;
         option.textContent = category;
         dropdown.appendChild(option);
     });
+
 
     // Set dropdown to last selected category, if available
     const lastSelectedCategory = localStorage.getItem("selectedCategory");
