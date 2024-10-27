@@ -16,6 +16,33 @@ function saveQuotes() {
     localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
+// Notification setup
+function showNotification(message) {
+    let notification = document.getElementById("notificationBar");
+    if (!notification) {
+        notification = document.createElement("div");
+        notification.id = "notificationBar";
+        notification.style.position = "fixed";
+        notification.style.top = "0";
+        notification.style.width = "100%";
+        notification.style.backgroundColor = "#4CAF50";
+        notification.style.color = "white";
+        notification.style.textAlign = "center";
+        notification.style.padding = "10px";
+        notification.style.fontSize = "16px";
+        notification.style.display = "none"; // Start hidden
+        document.body.appendChild(notification);
+    }
+    notification.textContent = message;
+    notification.style.display = "block"; // Show notification
+
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+        notification.style.display = "none";
+    }, 3000);
+}
+
+
 // Fetch initial quotes from the server
 async function fetchQuotesFromServer() {
     try {
