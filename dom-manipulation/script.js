@@ -17,6 +17,42 @@ function saveQuotes() {
 }
 
 
+function populateCategories() {
+    const categories = [...new Set(quotes.map(q => q.category))];
+    const dropdown = document.getElementById("categoryDropdown");
+    dropdown.innerHTML = "<option value='all'>All</option>"; // Default option
+    categories.forEach(category => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        dropdown.appendChild(option);
+    });
+
+    // Set dropdown to last selected category, if available
+    const lastSelectedCategory = localStorage.getItem("selectedCategory");
+    if (lastSelectedCategory) {
+        dropdown.value = lastSelectedCategory;
+        filterQuotes(lastSelectedCategory);
+    }
+}
+
+// Filter quotes based on category
+function filterQuotes(category) {
+    const quoteDisplay = document.getElementById("quoteDisplay");
+    quoteDisplay.innerHTML = ""; // Clear previous quotes
+    const filteredQuotes = category === 'all' ? quotes : quotes.filter(q => q.category === category);
+    filteredQuotes.forEach(q => {
+        const quoteElement = document.createElement("div");
+        quoteElement.textContent = `"${q.text}" - Category: ${q.category}`;
+        quoteDisplay.appendChild(quoteElement);
+    });
+
+        // Save selected category to local storage
+        localStorage.setItem("selectedCategory", category);
+    }
+
+
+
 // Function to display a random quote
 function showRandomQuote() {
     const quoteDisplay = document.getElementById("quoteDisplay");
@@ -86,6 +122,10 @@ function addQuote() {
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
 
+      // Update dropdown if the new category is unique
+      populateCategories();
+      filterQuotes(document.getElementById("categoryDropdown").value);
+
     // Optionally, display the new quote
     showRandomQuote();
 }
@@ -128,6 +168,7 @@ function exportToJson() {
 // Load a random quote when the page first loads
 createAddQuoteForm();
 showRandomQuote ();
+populateCategories();
 
 // Add event listener to the "Show New Quote" button
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
