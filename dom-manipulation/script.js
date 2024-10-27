@@ -135,7 +135,7 @@ document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 // Create export and import elements
 const exportQuotes = document.createElement("button");
-exportQuotes.textContent = "Export Quotes to JSON";
+exportQuotes.textContent = "Export Quotes";
 exportQuotes.addEventListener("click", exportToJson);
 document.body.appendChild(exportQuotes);
 
