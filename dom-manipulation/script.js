@@ -49,7 +49,6 @@ function handleConflicts(serverQuotes) {
     }
 }
 
-
    // Create and populate categories dropdown
    function createCategoryFilter() {
     // Create category filter dropdown if it doesn't exist
@@ -68,7 +67,6 @@ function handleConflicts(serverQuotes) {
 function startPeriodicSync() {
     setInterval(fetchQuotesFromServer, 60000); // Sync every 60 seconds
 }
-
 
 function populateCategories() {
     const categories = [...new Set(quotes.map(q => q.category))];
@@ -149,8 +147,6 @@ function createAddQuoteForm() {
 
     // Append the form container to the body or a specific section in the DOM
     document.body.appendChild(formContainer); // Or use document.getElementById("container").appendChild(formContainer);
-
-
 }
 
 
@@ -175,6 +171,30 @@ function addQuote() {
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
 
+     // Post the new quote to the server
+     fetch('https://jsonplaceholder.typicode.com/posts', {
+        method: 'POST', // Specify POST request
+        headers: {
+            'Content-Type': 'application/json' // Set content type
+        },
+        body: JSON.stringify({
+            title: newQuoteText,      // Map the text to the "title" field in the mock API
+            body: newQuoteCategory    // Map the category to the "body" field in the mock API
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Quote successfully posted to the server:", data);
+    })
+    .catch(error => {
+        console.error("Error posting data to the server:", error);
+    });
+    
       // Update dropdown if the new category is unique
       populateCategories();
       filterQuotes(document.getElementById("categoryDropdown").value);
@@ -198,8 +218,6 @@ function exportToJson() {
     URL.revokeObjectURL(url); // Clean up URL after download
 }
 
-
-
  // JSON import functionality
  function importFromJsonFile(event) {
     const fileReader = new FileReader();
@@ -216,8 +234,6 @@ function exportToJson() {
     fileReader.readAsText(event.target.files[0]);
 }
 
-
-
 // Load a random quote when the page first loads
 createAddQuoteForm();
 showRandomQuote ();
@@ -226,7 +242,6 @@ startPeriodicSync();
 
 // Add event listener to the "Show New Quote" button
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
-
 
 // Create export and import elements
 const exportButton = document.createElement("button");
@@ -239,6 +254,4 @@ importInput.setAttribute("type", "file");
 importInput.setAttribute("accept", ".json");
 importInput.addEventListener("change", importFromJsonFile);
 document.body.appendChild(importInput);
-
-
 });
