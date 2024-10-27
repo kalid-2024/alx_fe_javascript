@@ -16,6 +16,40 @@ function saveQuotes() {
     localStorage.setItem('quotes', JSON.stringify(quotes));
 }
 
+// Fetch initial quotes from the server
+async function fetchQuotesFromServer() {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const serverQuotes = await response.json();
+        handleConflicts(serverQuotes); // Merge with local data, handling conflicts
+    } catch (error) {
+        console.error("Error fetching server data:", error);
+    }
+}
+
+// Handle conflicts by comparing server and local data
+function handleConflicts(serverQuotes) {
+    let updated = false;
+
+    serverQuotes.forEach(serverQuote => {
+        const existingQuote = quotes.find(q => q.text === serverQuote.title);
+        if (!existingQuote) {
+            // New quote from server
+            quotes.push({ text: serverQuote.title, category: "Server Sync" });
+            updated = true;
+        }
+    });
+
+    if (updated) {
+        alert("New quotes from the server have been added to your collection.");
+        saveQuotes();
+        showRandomQuote();
+        populateCategories();
+    }
+}
+
+
    // Create and populate categories dropdown
    function createCategoryFilter() {
     // Create category filter dropdown if it doesn't exist
@@ -27,6 +61,12 @@ function saveQuotes() {
         document.body.appendChild(categoryFilter);
     }
     populateCategories(); // Populate categories after dropdown is created
+}
+
+
+// Periodically sync data from the server
+function startPeriodicSync() {
+    setInterval(fetchQuotesFromServer, 60000); // Sync every 60 seconds
 }
 
 
@@ -65,8 +105,6 @@ function filterQuotes(category) {
         // Save selected category to local storage
         localStorage.setItem("selectedCategory", category);
     }
-
-
 
 // Function to display a random quote
 function showRandomQuote() {
@@ -184,6 +222,7 @@ function exportToJson() {
 createAddQuoteForm();
 showRandomQuote ();
 populateCategories();
+startPeriodicSync();
 
 // Add event listener to the "Show New Quote" button
 document.getElementById("newQuote").addEventListener("click", showRandomQuote);
