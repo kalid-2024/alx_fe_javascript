@@ -134,10 +134,10 @@ document.getElementById("newQuote").addEventListener("click", showRandomQuote);
 
 
 // Create export and import elements
-const exportButton = document.createElement("button");
-exportButton.textContent = "Export Quotes to JSON";
-exportButton.addEventListener("click", exportToJson);
-document.body.appendChild(exportButton);
+const exportQuotes = document.createElement("button");
+exportQuotes.textContent = "Export Quotes to JSON";
+exportQuotes.addEventListener("click", exportToJson);
+document.body.appendChild(exportQuotes);
 
 const importInput = document.createElement("input");
 importInput.setAttribute("type", "file");
