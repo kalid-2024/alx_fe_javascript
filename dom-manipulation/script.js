@@ -63,6 +63,40 @@ function handleConflicts(serverQuotes) {
 }
 
 
+// Sync quotes function: Fetches latest quotes from the server and updates local storage if needed
+async function syncQuotes() {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        if (!response.ok) throw new Error("Failed to fetch data");
+        
+        const serverQuotes = await response.json();
+        const formattedServerQuotes = serverQuotes.map(quote => ({
+            text: quote.title,
+            category: "Server Sync" // Assign a default category or map it accordingly
+        }));
+
+        let updated = false;
+
+        // Check for new quotes and avoid duplicates
+        formattedServerQuotes.forEach(serverQuote => {
+            if (!quotes.some(localQuote => localQuote.text === serverQuote.text)) {
+                quotes.push(serverQuote); // Add only unique quotes
+                updated = true;
+            }
+        });
+
+        if (updated) {
+            saveQuotes();
+            alert("New quotes synced from the server!");
+            showRandomQuote();
+            populateCategories();
+        }
+    } catch (error) {
+        console.error("Error syncing quotes:", error);
+    }
+}
+
+
 // Periodically sync data from the server
 function startPeriodicSync() {
     setInterval(fetchQuotesFromServer, 60000); // Sync every 60 seconds
@@ -194,7 +228,7 @@ function addQuote() {
     .catch(error => {
         console.error("Error posting data to the server:", error);
     });
-    
+
       // Update dropdown if the new category is unique
       populateCategories();
       filterQuotes(document.getElementById("categoryDropdown").value);
@@ -235,6 +269,7 @@ function exportToJson() {
 }
 
 // Load a random quote when the page first loads
+syncQuotes();
 createAddQuoteForm();
 showRandomQuote ();
 populateCategories();
@@ -254,4 +289,5 @@ importInput.setAttribute("type", "file");
 importInput.setAttribute("accept", ".json");
 importInput.addEventListener("change", importFromJsonFile);
 document.body.appendChild(importInput);
+
 });
